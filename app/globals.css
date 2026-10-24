@@ -5,36 +5,34 @@
 @source "../lib/**/*.{ts,tsx}";
 
 @theme {
-  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-serif: var(--font-newsreader), "Newsreader", Georgia, serif;
+  --font-sans: var(--font-schibsted), "Schibsted Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: var(--font-noto-mono), "Noto Sans Mono", "SF Mono", Monaco, ui-monospace, monospace;
 
-  --radius: 2px;
+  --radius-sheet: 4px;
   --radius-sm: 2px;
-  --radius-md: 4px;
 }
 
 /**
- * Design tokens.
- *
- * Every component reads these through `var(--token)` rather than a Tailwind colour class, which is
- * what lets a project change its whole palette from `lib/app-config.ts`: the root layout writes
- * `--accent` inline, overriding the default below. Nothing else needs editing per project.
+ * Archetype J · Sheet tokens
+ * Lilac desk (#E3DEF2) with a crisp white A4-proportioned paper sheet (#FFFFFF).
  */
 :root {
-  --bg-base: #0A0A0A;
-  --bg-surface: #111111;
-  --bg-elevated: #181818;
-  --bg-overlay: #1F1F1F;
-  --border-subtle: #1E1E1E;
-  --border-default: #2A2A2A;
-  --border-strong: #383838;
-  --text-primary: #EBEBEB;
-  --text-secondary: #888888;
-  --text-tertiary: #555555;
-  --accent: #00E5CC;
-  --success: #1DB954;
-  --warning: #F5A623;
-  --danger: #E53E3E;
+  --bg-base: #E3DEF2;        /* Lilac desk ground */
+  --bg-surface: #FFFFFF;     /* Pure white sheet */
+  --bg-elevated: #F6F4FB;    /* Inset field / panel on sheet */
+  --bg-overlay: #ECE7F7;     /* Desk element overlay */
+  --border-subtle: #CFC8E6;  /* Soft lilac ruling / desk border */
+  --border-default: #B7AED6; /* Defined border */
+  --border-strong: #7A729A;  /* High contrast border */
+  --text-primary: #1C1B33;   /* Deep document ink */
+  --text-secondary: #5A5878; /* Muted descriptor text */
+  --text-tertiary: #8481A2;  /* Quiet marginalia text */
+  --accent: #5B3FD0;         /* Royal document violet */
+  --accent-ink: #FFFFFF;     /* White ink on violet */
+  --done: #1F7A4D;           /* Executed forest green */
+  --declined: #A3263A;       /* Struck crimson */
+  --warning: #C2740A;        /* Expiry amber */
 }
 
 @layer base {
@@ -46,10 +44,11 @@
 
   html {
     height: 100%;
+    background-color: #E3DEF2;
   }
 
   body {
-    background: var(--bg-base);
+    background-color: #E3DEF2;
     color: var(--text-primary);
     font-family: var(--font-sans);
     min-height: 100%;
@@ -59,19 +58,63 @@
 
   a {
     color: inherit;
+    text-decoration: none;
   }
 }
 
-/* Touch targets
- *
- * The interface is deliberately dense, and at 26px tall a `size="sm"` button is comfortable with a
- * mouse and a coin-flip with a thumb. `pointer: coarse` matches touch input rather than screen
- * width, so this raises the hit area exactly where it is needed and leaves mouse density
- * untouched, including on a small laptop window.
- *
- * 44px is Apple's minimum; Android asks for 48dp. Padding rather than height, so a control that is
- * already large enough is not stretched.
- */
+.serif {
+  font-family: var(--font-serif);
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+/* Desk ground atmosphere */
+.sheet-desk-ground {
+  background-color: #E3DEF2;
+  background-image:
+    radial-gradient(ellipse at 50% 10%, #EFEBF8 0%, #E3DEF2 80%),
+    linear-gradient(to bottom, transparent 96%, rgba(91, 63, 208, 0.04) 100%);
+}
+
+/* White A4 paper sheet container */
+.paper-sheet-card {
+  background: #FFFFFF;
+  border-top: 3px solid var(--accent);
+  box-shadow:
+    0 1px 2px 0 rgba(28, 27, 51, 0.04),
+    0 8px 24px -4px rgba(28, 27, 51, 0.08),
+    0 24px 48px -12px rgba(28, 27, 51, 0.06);
+  border-radius: 2px;
+}
+
+/* Document signature ruled line */
+.sig-ruled-line {
+  border-bottom: 1.5px solid #CFC8E6;
+}
+
+/* Executed status banner across sheet head */
+.executed-banner {
+  background: color-mix(in srgb, var(--done) 9%, #FFFFFF);
+  border-left: 3px solid var(--done);
+  color: var(--done);
+}
+
+/* Declined banner across sheet head */
+.declined-banner {
+  background: color-mix(in srgb, var(--declined) 9%, #FFFFFF);
+  border-left: 3px solid var(--declined);
+  color: var(--declined);
+}
+
+/* Expired banner across sheet head */
+.expired-banner {
+  background: color-mix(in srgb, var(--warning) 10%, #FFFFFF);
+  border-left: 3px solid var(--warning);
+  color: var(--warning);
+}
+
 @media (pointer: coarse) {
   button,
   [role="button"],
@@ -83,13 +126,10 @@
 
   input,
   textarea {
-    /* Anything under 16px makes iOS Safari zoom the page on focus, and it does not zoom back. */
     font-size: 16px;
   }
 }
 
-/* Nothing should be able to scroll the page sideways. A single overflowing address or hash
- * otherwise shifts the whole layout and there is no obvious culprit. */
 html,
 body {
   overflow-x: hidden;
@@ -101,23 +141,17 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--bg-base);
+  background: #E3DEF2;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--border-strong);
+  background: #B7AED6;
   border-radius: 2px;
 }
 
-.mono {
-  font-family: var(--font-mono);
-  letter-spacing: 0;
-}
-
-/* Toast entry. Radix drives the data-state; without the keyframes the toast simply appears. */
 @keyframes slideIn {
   from { transform: translateX(8px); opacity: 0; }
   to   { transform: translateX(0);   opacity: 1; }
@@ -133,9 +167,9 @@ body {
 .skeleton {
   background: linear-gradient(
     90deg,
-    var(--bg-surface) 25%,
-    var(--bg-elevated) 50%,
-    var(--bg-surface) 75%
+    #ECE7F7 25%,
+    #F6F4FB 50%,
+    #ECE7F7 75%
   );
   background-size: 800px 100%;
   animation: shimmer 1.6s ease-in-out infinite;
