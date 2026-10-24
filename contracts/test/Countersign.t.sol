@@ -428,7 +428,7 @@ contract CountersignTest is Test {
 
         uint8 expectedCount = 0;
         for (uint256 i = 0; i < 20; i++) {
-            if ((signBits & (1 << i)) != 0) {
+            if ((signBits & (uint32(1) << uint32(i))) != 0) {
                 vm.prank(signers[i]);
                 countersign.sign(id);
                 expectedCount++;
