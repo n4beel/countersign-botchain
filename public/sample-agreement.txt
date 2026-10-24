@@ -1,0 +1,5 @@
+Countersign Protocol Sample Agreement
+Document Fingerprint Test
+This is a standard neutral agreement between parties on BOT Chain.
+Date: 2026-10-25
+Version: 1.0.0
