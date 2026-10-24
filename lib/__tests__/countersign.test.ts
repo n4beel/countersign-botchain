@@ -7,6 +7,7 @@ import {
   statusLabel,
   titleByteLength,
   validateSigners,
+  decodeSigners,
 } from "../countersign";
 
 describe("hashFile", () => {
@@ -113,3 +114,25 @@ describe("titleByteLength", () => {
     expect(titleByteLength("Hello 🤝")).toBe(10); // emoji is 4 bytes
   });
 });
+
+describe("decodeSigners", () => {
+  it("decodes contract tuple accurately", () => {
+    const raw = [
+      ["0x1111111111111111111111111111111111111111", "0x2222222222222222222222222222222222222222"],
+      [true, false],
+    ] as const;
+    const { signers, signed } = decodeSigners(raw);
+    expect(signers).toEqual([
+      "0x1111111111111111111111111111111111111111",
+      "0x2222222222222222222222222222222222222222",
+    ]);
+    expect(signed).toEqual([true, false]);
+  });
+
+  it("handles undefined and empty responses safely", () => {
+    expect(decodeSigners(undefined)).toEqual({ signers: [], signed: [] });
+    expect(decodeSigners([])).toEqual({ signers: [], signed: [] });
+    expect(decodeSigners([[]])).toEqual({ signers: [], signed: [] });
+  });
+});
+

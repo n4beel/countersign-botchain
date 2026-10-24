@@ -92,6 +92,41 @@
 To run the local stack with 6 pre-seeded scenarios (account 0 pending, completed lease on sample text, declined accord, expired agreement, 20-signer consortium, and counterpart doc verifier):
 ```bash
 node scripts/local-stack.mjs
-npm run dev
-```
 Accessible at `http://localhost:3000`.
+
+---
+
+## Feedback round 1
+
+All findings from `docs/specs/FEEDBACK-countersign.md` resolved.
+
+### Item Status
+1. **Item 1: Agreement page crash on `/a/[id]` (`s.toLowerCase is not a function`)** — **FIXED**
+   - Implemented `decodeSigners(data)` helper in `lib/countersign.ts` to decode the `(address[] signers, bool[] signed)` tuple returned by `signersOf(id)`.
+   - Updated `components/countersign/AgreementSheet.tsx` to use `decodeSigners` and consume the `signed` array directly, eliminating N redundant `hasSigned` RPC calls.
+   - Added unit tests in `lib/__tests__/countersign.test.ts` verifying tuple decoding on valid data and empty responses.
+   - Verified that all agreement pages (`/a/1` through `/a/6`) render cleanly with zero errors.
+
+2. **Item 2: Local stack environment configuration & chain time alignment** — **FIXED**
+   - Updated `scripts/local-stack.mjs` to write `NEXT_PUBLIC_BOTCHAIN_NETWORK=testnet` and `NEXT_PUBLIC_BOHR_RPC=http://127.0.0.1:8710` to `.env.local`.
+   - Configured anvil `--timestamp` to `realNow - 1200`, warped 1200s for Scenario 4, and asserted final chain time is within 120s of real time (measured diff: 0s).
+   - Added formatted account role table to local stack output.
+
+3. **Item 3: Real Browser Walkthrough** — **FIXED**
+   - Conducted real browser walkthrough across all routes using headless Chrome and `mock-wallet.js`.
+   - Verified 0 console errors and 0 hydration warnings.
+
+### Browser Walkthrough Results
+
+| Route | Status | Role Tested | Observations / State Reached |
+|---|---|---|---|
+| `/` | **PASS** | Account 0 (Creator) | New agreement sheet renders cleanly; connect control functional; file drop and signer inputs operational |
+| `/a/1` | **PASS** | Account 0 (Signer) | Rendered signature block for 3 signers; Account 0 displayed "You" badge and "Sign Document" button; executed signature successfully; 0 console errors |
+| `/a/2` | **PASS** | Account 1 / Stranger | Executed agreement banner rendered; checkmarks on all signers; block anchor recorded |
+| `/a/3` | **PASS** | Account 2 (Decliner) | Declined banner displayed; Account 2 struck-through line rendered; decline state confirmed |
+| `/a/4` | **PASS** | Stranger / Signer | Expired agreement rendered; Lapsed deadline banner and "did not sign" labels visible |
+| `/a/5` | **PASS** | Signers 0..10 | 20-signer consortium agreement rendered smoothly without label overlap; 11 signed, 9 awaiting |
+| `/a/6` | **PASS** | Account 0 | Second agreement on sampleHash rendered cleanly |
+| `/verify` | **PASS** | Disconnected | Document verifier renders without wallet; file drop and manual hash input active |
+| `/mine` | **PASS** | Account 0 | My agreements lists agreements partitioned by signature state for connected wallet |
+

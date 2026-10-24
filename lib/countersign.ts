@@ -180,3 +180,28 @@ export function deadlineLabel(
 export function titleByteLength(title: string): number {
   return new TextEncoder().encode(title).length;
 }
+
+/**
+ * Decodes the tuple returned by signersOf(id) into typed arrays.
+ * Contract returns: (address[] memory signers, bool[] memory signed)
+ */
+export function decodeSigners(
+  data: unknown
+): { signers: Address[]; signed: boolean[] } {
+  if (!data || !Array.isArray(data) || data.length < 2) {
+    return { signers: [], signed: [] };
+  }
+  const signersRaw = data[0];
+  const signedRaw = data[1];
+
+  const signers: Address[] = Array.isArray(signersRaw)
+    ? signersRaw.map((s) => (typeof s === "string" ? (s as Address) : ("0x" as Address)))
+    : [];
+
+  const signed: boolean[] = Array.isArray(signedRaw)
+    ? signedRaw.map((b) => Boolean(b))
+    : [];
+
+  return { signers, signed };
+}
+

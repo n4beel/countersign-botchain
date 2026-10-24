@@ -10,7 +10,6 @@ import {
   useAccount,
   useChainId,
   useReadContract,
-  useReadContracts,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
@@ -22,6 +21,7 @@ import { getDeployment } from "@/lib/botchain/deployment";
 import { isBotChainId } from "@/lib/botchain/chain";
 import {
   deadlineLabel,
+  decodeSigners,
   hashFile,
   statusLabel,
 } from "@/lib/countersign";
@@ -85,26 +85,10 @@ export default function AgreementSheet({ id }: AgreementSheetProps) {
     query: { enabled: !!deployment && id > 0n },
   });
 
-  const signers = (signersData as Address[] | undefined) ?? [];
-
-  // Read hasSigned for each signer
-  const hasSignedContracts = useMemo(() => {
-    if (!deployment || !signers.length) return [];
-    return signers.map((s) => ({
-      address: deployment.address,
-      abi: countersignAbi,
-      functionName: "hasSigned" as const,
-      args: [id, s] as const,
-    }));
-  }, [deployment, signers, id]);
-
-  const {
-    data: signedFlags,
-    refetch: refetchSignedFlags,
-  } = useReadContracts({
-    contracts: hasSignedContracts,
-    query: { enabled: hasSignedContracts.length > 0 },
-  });
+  const { signers, signed } = useMemo(
+    () => decodeSigners(signersData),
+    [signersData]
+  );
 
   // Action hooks
   const { writeContractAsync } = useWriteContract();
@@ -125,7 +109,6 @@ export default function AgreementSheet({ id }: AgreementSheetProps) {
       setStage("confirmed");
       refetchAgreement();
       refetchSigners();
-      refetchSignedFlags();
     } else if (isReceiptError) {
       settledRef.current = txHash;
       setStage("error");
@@ -139,7 +122,6 @@ export default function AgreementSheet({ id }: AgreementSheetProps) {
     receiptError,
     refetchAgreement,
     refetchSigners,
-    refetchSignedFlags,
   ]);
 
   // File drop handler for checker
@@ -262,7 +244,7 @@ export default function AgreementSheet({ id }: AgreementSheetProps) {
   );
   const hasUserSigned =
     userSignerIndex >= 0 &&
-    signedFlags?.[userSignerIndex]?.result === true;
+    signed[userSignerIndex] === true;
   const canSign = status === 0 && isParty && !hasUserSigned;
 
   return (
@@ -348,7 +330,7 @@ export default function AgreementSheet({ id }: AgreementSheetProps) {
 
         <div className="space-y-4">
           {signers.map((signerAddr, idx) => {
-            const isSigned = signedFlags?.[idx]?.result === true;
+            const isSigned = signed[idx] === true;
             const isCaller =
               signerAddr.toLowerCase() === connectedLower;
             const isDecliner =
