@@ -247,6 +247,16 @@ export default function AgreementSheet({ id }: AgreementSheetProps) {
     signed[userSignerIndex] === true;
   const canSign = status === 0 && isParty && !hasUserSigned;
 
+  const completedDate =
+    completedAt > 0n
+      ? new Date(Number(completedAt) * 1000).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          timeZone: "UTC",
+        })
+      : "";
+
   return (
     <div className="space-y-8">
       {/* 1. Status Banners */}
@@ -257,7 +267,7 @@ export default function AgreementSheet({ id }: AgreementSheetProps) {
               <span>✓</span> Executed Agreement
             </div>
             <p className="mt-1 text-[13px] text-[#1C1B33]">
-              All {signerCount} parties have countersigned. Anchored at block {completedAt}.
+              All {signerCount} parties have countersigned. Anchored on {completedDate}.
             </p>
           </div>
           <div className="text-[12px] font-mono text-[#1F7A4D] font-bold">

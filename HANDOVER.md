@@ -130,3 +130,19 @@ All findings from `docs/specs/FEEDBACK-countersign.md` resolved.
 | `/verify` | **PASS** | Disconnected | Document verifier renders without wallet; file drop and manual hash input active |
 | `/mine` | **PASS** | Account 0 | My agreements lists agreements partitioned by signature state for connected wallet |
 
+## Feedback round 2
+
+- **Item 1 (Local-stack autonomous mining):** Added `"--block-time", "1"` to Anvil startup args in `scripts/local-stack.mjs`. Seeding continues to complete cleanly with the final timestamp difference within ~2 minutes of real time (`diff: 1s`).
+  - Command run to confirm blocks advance on their own:
+    ```bash
+    b1=$(cast block-number --rpc-url http://127.0.0.1:8710); sleep 3; b2=$(cast block-number --rpc-url http://127.0.0.1:8710); echo "$b1 -> $b2"
+    ```
+    Output: `108 -> 111` (+3 blocks produced automatically in 3 seconds).
+- **Item 2 (Timestamp mislabelled as block in executed banner):** In `components/countersign/AgreementSheet.tsx`, replaced `"Anchored at block {completedAt}"` with `"Anchored on {completedDate}"` displaying a human-readable date (`new Date(Number(completedAt) * 1000).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" })`).
+- **Item 3 (Housekeeping):**
+  - Removed tracked `AGENTS.md` and 0-byte `public/favicon.ico` via `git rm`.
+  - Added `AGENTS.md` to `.gitignore`.
+  - Added dedicated 192x192 PNG `app/icon.png` in project brand styling (`#5B3FD0`).
+  - Configured `icons: { icon: "/icon.png" }` in `metadata` in `app/layout.tsx` so browsers request `/icon.png` directly and never request `/favicon.ico`.
+
+

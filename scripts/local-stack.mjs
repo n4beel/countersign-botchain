@@ -58,6 +58,8 @@ spawn(
     "25",
     "--timestamp",
     String(startTimestamp),
+    "--block-time",
+    "1",
     "--silent",
   ],
   {
