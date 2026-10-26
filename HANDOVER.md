@@ -160,5 +160,16 @@ All findings from `docs/specs/FEEDBACK-countersign.md` resolved.
   - `/a/1` (Detail): Verified all three links present.
   - `/nonexistent` (Not Found): Verified all three links present.
 
+## Feedback round 4
+
+- **Item 1 (Shared CSS Tokens & Contrast):**
+  - Defined missing tokens in `app/globals.css`:
+    - `--success: #1F7A4D` (5.1:1 contrast on `--bg-elevated: #F6F4FB`, WCAG AA)
+    - `--danger: #A3263A` (6.1:1 contrast on `--bg-elevated`, WCAG AA)
+  - Updated `ConnectButton.tsx` menu items with readable typography, defined surfaces, and hover state (`hover:bg-[rgba(91,63,208,0.06)]`).
+  - Added unit test `test/lint/tokens.test.ts`.
+  - Verified `python3 scripts/check-tokens.py countersign` exits 0 with zero undefined tokens.
+
+
 
 
