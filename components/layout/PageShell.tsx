@@ -7,6 +7,7 @@ import ConnectButton from "@/components/ui/ConnectButton";
 import NetworkBadge from "@/components/botchain/NetworkBadge";
 import BuiltOnBotChain from "@/components/botchain/BuiltOnBotChain";
 import { app } from "@/lib/app-config";
+import { footerLinks } from "@/lib/botchain/chain";
 
 export type NavItem = { href: string; label: string };
 
@@ -44,6 +45,7 @@ export default function PageShell({
 }: PageShellProps) {
   const pathname = usePathname();
   const desc = description || subtitle;
+  const { site, explorer } = footerLinks();
 
   return (
     <div className="sheet-desk-ground min-h-[100dvh] flex flex-col justify-between px-3 sm:px-6 py-6 md:py-10 text-[#1C1B33]">
@@ -152,7 +154,7 @@ export default function PageShell({
 
               <div className="flex items-center gap-4 text-[#8481A2]">
                 <a
-                  href="https://botchain.ai"
+                  href={site}
                   target="_blank"
                   rel="noreferrer"
                   className="hover:text-[#5B3FD0] underline"
@@ -160,7 +162,7 @@ export default function PageShell({
                   botchain.ai
                 </a>
                 <a
-                  href="https://scan.botchain.ai"
+                  href={explorer}
                   target="_blank"
                   rel="noreferrer"
                   className="hover:text-[#5B3FD0] underline"

@@ -145,4 +145,20 @@ All findings from `docs/specs/FEEDBACK-countersign.md` resolved.
   - Added dedicated 192x192 PNG `app/icon.png` in project brand styling (`#5B3FD0`).
   - Configured `icons: { icon: "/icon.png" }` in `metadata` in `app/layout.tsx` so browsers request `/icon.png` directly and never request `/favicon.ico`.
 
+## Feedback round 3
+
+- **Footer Three-Link Compliance & Helper:**
+  - Added fixed constants `BOTCHAIN_SITE_URL = "https://botchain.ai"` and `BOTCHAIN_EXPLORER_URL = "https://scan.botchain.ai"` in `lib/botchain/chain.ts`.
+  - Added exported `footerLinks(chainId?: number): FooterLinks` returning `{ contract, site, explorer }` where `contract` is `<explorer for that chain>/address/<address>` (or `null` when undeployed).
+  - Updated `BuiltOnBotChain` to use `footerLinks(activeBotChain.id).contract`.
+  - Updated paper sheet footer in `components/layout/PageShell.tsx` to reference `site` and `explorer` from `footerLinks()`.
+  - Added `app/not-found.tsx` wrapped in `PageShell` ensuring footer renders on 404 and unrouted states.
+  - Added unit test suite in `lib/botchain/__tests__/chain.test.ts` covering chain IDs 677 and 968 for both deployed and undeployed configurations.
+
+- **Browser-Check with Local Stack (port 8710 / 3010):**
+  - `/` (Home): Verified all three links present (`https://scan.bohr.life/address/0x5fbdb2315678afecb367f032d93f642f64180aa3`, `https://botchain.ai`, `https://scan.botchain.ai`).
+  - `/a/1` (Detail): Verified all three links present.
+  - `/nonexistent` (Not Found): Verified all three links present.
+
+
 
